@@ -27,7 +27,7 @@ export default function App() {
     <div className="app" style={styles.app}>
       <div className="screen" style={styles.screen} ref={screenRef}>
         {text.length === 0 ? (
-          <p style={{ color: "#888" }}>Type a letter below...</p>
+          <p style={{ color: "#888" }}>Type any text below...</p>
         ) : (
           [...text].map((char, i) => {
             const lower = char.toLowerCase();
@@ -58,7 +58,7 @@ export default function App() {
         type="text"
         value={text}
         onChange={handleChange}
-        placeholder="Type here..."
+        placeholder="Yasminify your text here!"
         style={styles.input}
       />
 
