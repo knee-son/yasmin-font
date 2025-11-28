@@ -33,22 +33,16 @@ export default function App() {
             const lower = char.toLowerCase();
             const key = `/src/assets/images/letter_${lower}.webp`;
             const imageUrl = letterImages[key];
-            console.log(letterImages);
             return (
+              imageUrl ?
               <img
                 key={i}
                 src={imageUrl}
                 alt={char}
                 style={styles.image}
-                onError={(e) => {
-                  // replace with a transparent "space" div
-                  e.target.replaceWith(
-                    Object.assign(document.createElement("div"), {
-                      style: `max-height: 30%; aspect-ratio: 1/3; height: 100%;`,
-                    })
-                  );
-                }}
-              />
+              /> :
+               
+              <div style={{ maxHeight: "30%", aspectRatio: "1/3", height: "100%" }} />
             );
           })
         )}
