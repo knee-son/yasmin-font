@@ -20,8 +20,7 @@ for filename in os.listdir(src_folder):
     if bbox:
         img = img.crop(bbox)
 
-    # --- Rescale to 1000px height ---
-    h = 1000
+    h = 90
     w = int(img.width * h / img.height)
     img = img.resize((w, h), Image.LANCZOS)
 
