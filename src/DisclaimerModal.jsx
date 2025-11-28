@@ -64,6 +64,8 @@ export default function DisclaimerModal({ isOpen, onClose }) {
             third-party tools, including Canva. These assets are used under the terms of their
             respective licenses. This app is not affiliated with or endorsed by Canva.
           </p>
+          <br />
+          <p className="text-gray-700 text-justify">Made with 💞 &mdash; knee-son</p>
         </div>
       </div>
     </div>
