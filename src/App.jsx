@@ -3,8 +3,12 @@ import html2canvas from "html2canvas";
 
 export default function App() {
   const [text, setText] = useState("");
-  const [currentLetter, setCurrentLetter] = useState("");
   const screenRef = useRef(null); // reference to the screen div
+
+  const letterImages = import.meta.glob(
+    "/src/assets/images/letter_*.webp",
+    { eager: true, import: "default" }
+  );
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -27,7 +31,9 @@ export default function App() {
         ) : (
           [...text].map((char, i) => {
             const lower = char.toLowerCase();
-            const imageUrl = `/assets/letter_${lower}.webp`;
+            const key = `/src/assets/images/letter_${lower}.webp`;
+            const imageUrl = letterImages[key];
+            console.log(letterImages);
             return (
               <img
                 key={i}
