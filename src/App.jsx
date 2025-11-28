@@ -63,7 +63,7 @@ export default function App() {
       />
 
       <button onClick={downloadScreen} style={styles.button}>
-        Download Screen
+        Download Image
       </button>
     </div>
   );
