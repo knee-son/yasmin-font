@@ -58,7 +58,7 @@ export default function App() {
         type="text"
         value={text}
         onChange={handleChange}
-        placeholder="Yasminify your text here!"
+        placeholder="Yasminify your text here! 🌸"
         style={styles.input}
       />
 
