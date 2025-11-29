@@ -80,12 +80,6 @@ export default function App() {
 
       {/* Bottom: 4/5 height */}
       <div className="h-5/6 flex flex-row justify-center">
-        <img
-          src={StandImage}
-          alt="Kween Yasmin standing"
-          className="h-[60%] self-end translate-x-5"
-          style={{ filter: "drop-shadow(-8px 12px 1px rgba(0,0,0,0.2))" }}
-        />
         {/* main canvas */}
         <div
           ref={screenRef}
@@ -96,8 +90,8 @@ export default function App() {
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)", // matches shadow-md
           }}
           className="
-            flex items-center justify-center mx-8
-            h-[85%] aspect-4/3 overflow-hidden
+            flex items-center justify-center
+            h-[80vh] aspect-4/3 overflow-hidden ml-auto mr-8
           "
         >
           {text.length === 0 ? (
@@ -126,7 +120,7 @@ export default function App() {
         </div>
 
         {/* input */}
-        <div className="flex flex-col gap-4 items-center mr-17">
+        <div className="flex flex-col gap-4 items-center mr-16">
           <textarea
             value={text}
             onChange={handleChange}
@@ -136,6 +130,7 @@ export default function App() {
               focus:outline-none focus:ring-2 focus:ring-pink-300
               shadow-sm w-80 h-40 resize-none z-10
             "
+            autoFocus
           />
 
           <button
