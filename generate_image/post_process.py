@@ -1,15 +1,12 @@
 from PIL import Image
 import os
 
-src_folder = "assets/processed"
-dst_folder = "assets/post-processed"
+src_folder = "assets/source"
+dst_folder = "assets/processed"
 os.makedirs(dst_folder, exist_ok=True)
 
 # loop over images
 for filename in os.listdir(src_folder):
-    if not filename.lower().endswith((".png", ".jpg", ".jpeg")):
-        continue
-
     img_path = os.path.join(src_folder, filename)
     img = Image.open(img_path)
 
@@ -20,7 +17,7 @@ for filename in os.listdir(src_folder):
     if bbox:
         img = img.crop(bbox)
 
-    h = 90
+    h = 200
     w = int(img.width * h / img.height)
     img = img.resize((w, h), Image.LANCZOS)
 

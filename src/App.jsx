@@ -5,13 +5,16 @@ import html2canvas from "html2canvas";
 import StandImage from "./assets/images/stand.webp";
 import SideEyeImage from "./assets/images/side_eye.webp";
 
+import letterMetrics from "./assets/fonts/letterMetrics.json";
+
 export default function App() {
   const [text, setText] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [autocaps, setAutocaps] = useState(true);
   const screenRef = useRef(null);
 
   const letterImages = import.meta.glob(
-    "/src/assets/images/letter_*.webp",
+    "/src/assets/images/*.webp",
     { eager: true, import: "default" }
   );
 
@@ -107,9 +110,18 @@ export default function App() {
           {text.length === 0 ? (
             <p className="text-gray-400 text-lg">Your stylized text will show here...</p>
           ) : (
-            [...text].map((char, i) => {
+            [...(autocaps ? text.toUpperCase() : text)].map((char, i) => {
+              let prefix;
+              if (char >= 'a' && char <= 'z') {
+                prefix = 'lower';
+              } else if (char >= 'A' && char <= 'Z') {
+                prefix = 'upper';
+              } else if (char >= '0' && char <= '9') {
+                prefix = 'number';
+              }
+
               const lower = char.toLowerCase();
-              const key = `/src/assets/images/letter_${lower}.webp`;
+              const key = `/src/assets/images/${prefix}_${lower}.webp`;
               const imageUrl = letterImages[key];
 
               return imageUrl ? (
@@ -131,17 +143,38 @@ export default function App() {
 
         {/* input */}
         <div className="flex flex-col gap-4 items-center">
-          <textarea
-            value={text}
-            onChange={handleChange}
-            placeholder="Yasminify your text here! 🌸"
-            className="
-              px-4 py-2 text-base rounded-lg border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-pink-300
-              shadow-sm w-80 h-40 resize-none z-10
-            "
-            autoFocus
-          />
+          <div className="relative w-80">
+            <textarea
+              value={text}
+              onChange={handleChange}
+              placeholder="Yasminify your text here! 🌸"
+              className="
+                px-4 py-2 text-base rounded-lg border border-gray-300
+                focus:outline-none focus:ring-2 focus:ring-pink-300
+                bg-linear-to-b from-white to-gray-100
+                shadow-sm w-full h-40 resize-none z-10
+              "
+              autoFocus
+            />
+
+            {/* Autocaps checkbox */}
+            <label className="
+                absolute bottom-2 right-2 flex items-center
+                gap-1 text-xs mb-1 text-gray-500"
+              style={{
+                fontFamily: "Consolas",
+              }}
+            >
+              {autocaps ? "AUTOCAPS" : "autocaps"}
+              <input
+                type="checkbox"
+                checked={autocaps}
+                onChange={(e) => setAutocaps(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-400"
+              />
+            </label>
+          </div>
+
 
           <div className="flex gap-2 self-start">
             <button
