@@ -79,7 +79,17 @@ export default function App() {
       </div>
 
       {/* Bottom: 4/5 height */}
-      <div className="h-5/6 flex flex-row justify-center">
+      <div className="h-5/6 flex flex-row justify-evenly pb-8">
+
+        <div className="px-4 py-2 text-base rounded-lg border border-gray-300
+              shadow-sm w-80 h-full resize-none">
+          {/* TODO:
+          <ul>
+            <li>choose background</li>
+            <li>add aspect ratio</li>
+          </ul> */}
+        </div>
+
         {/* main canvas */}
         <div
           ref={screenRef}
@@ -91,7 +101,7 @@ export default function App() {
           }}
           className="
             flex items-center justify-center
-            h-[80vh] aspect-4/3 overflow-hidden ml-auto mr-8
+            h-full aspect-4/3 overflow-hidden
           "
         >
           {text.length === 0 ? (
@@ -120,7 +130,7 @@ export default function App() {
         </div>
 
         {/* input */}
-        <div className="flex flex-col gap-4 items-center mr-16">
+        <div className="flex flex-col gap-4 items-center">
           <textarea
             value={text}
             onChange={handleChange}
@@ -133,16 +143,29 @@ export default function App() {
             autoFocus
           />
 
-          <button
-            onClick={downloadScreen}
-            className="
-          px-5 py-2 rounded-lg text-white bg-pink-400
-          hover:bg-pink-500 active:bg-pink-600
-          transition shadow-md self-start
-        "
-          >
-            Download Image
-          </button>
+          <div className="flex gap-2 self-start">
+            <button
+              onClick={downloadScreen}
+              className="
+                px-5 py-2 rounded-lg text-white bg-pink-400
+                hover:bg-pink-500 active:bg-pink-600
+                transition shadow-md
+              "
+            >
+              Download Image
+            </button>
+
+            <button
+              onClick={() => { }}
+              className="
+                px-5 py-2 rounded-lg text-white bg-purple-950
+                hover:bg-purple-900 active:bg-purple-800
+                transition shadow-md
+              "
+            >
+              4:3
+            </button>
+          </div>
         </div>
       </div>
 
