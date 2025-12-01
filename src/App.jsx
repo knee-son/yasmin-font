@@ -99,46 +99,52 @@ export default function App() {
           style={{
             backgroundColor: "#ffffff",
             border: "1px solid #d1d5db",
-            borderRadius: ".75rem",     // matches rounded-xl
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)", // matches shadow-md
+            borderRadius: ".75rem",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
           }}
           className="
-            flex items-center justify-center
             h-full aspect-4/3 overflow-hidden
+            flex items-center justify-center
           "
         >
-          {text.length === 0 ? (
-            <p className="text-gray-400 text-lg">Your stylized text will show here...</p>
-          ) : (
-            [...(autocaps ? text.toUpperCase() : text)].map((char, i) => {
-              let prefix;
-              if (char >= 'a' && char <= 'z') {
-                prefix = 'lower';
-              } else if (char >= 'A' && char <= 'Z') {
-                prefix = 'upper';
-              } else if (char >= '0' && char <= '9') {
-                prefix = 'number';
-              }
+          <div className="
+            whitespace-pre-wrap text-center
+          ">
+            {text.length === 0 ? (
+              <p className="text-gray-400 text-lg">Your stylized text will show here...</p>
+            ) : (
+              [...(autocaps ? text.toUpperCase() : text)].map((c, i) => {
+                const key = letterMetrics[c]?.filename;
 
-              const lower = char.toLowerCase();
-              const key = `/src/assets/images/${prefix}_${lower}.webp`;
-              const imageUrl = letterImages[key];
+                if (c === '\n') {
+                  return <br key={i} />;
+                }
 
-              return imageUrl ? (
-                <img
-                  key={i}
-                  src={imageUrl}
-                  alt={char}
-                  className="max-h-[30%]"
-                />
-              ) : (
-                <div
-                  key={i}
-                  className="w-8 max-h-[30%] aspect-1/3"
-                />
-              );
-            })
-          )}
+                const imageUrl = letterImages[key];
+                const charCount = [...text].filter(c => c in letterMetrics).length;
+                console.log([...text].map(c => c in letterMetrics), charCount);
+                const parentHeight = screenRef.current.clientHeight;
+                const height = Math.max(parentHeight * .1, parentHeight * (100 / charCount / 100));
+
+                console.log(height);
+
+                return imageUrl ? (
+                  <img
+                    key={i}
+                    src={imageUrl}
+                    alt={c}
+                    style={{ height: `${height}px`, maxHeight: parentHeight * 0.3 + "px" }}
+                    className={`max-h-[${(parentHeight * .3)}px] inline-block my-2`}
+                  />
+                ) : (
+                  <div
+                    key={i}
+                    className="w-8 max-h-[30%] aspect-1/3 inline-block"
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* input */}
