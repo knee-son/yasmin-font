@@ -62,14 +62,14 @@ export default function App() {
   return (
     <div className="w-full h-screen bg-gray-100 flex flex-col">
       {/* Top: 1/5 height */}
-      <div className="h-1/6 flex items-center justify-center">
+      <div className="h-1/6 flex items-center justify-center px-8">
         <h1
           style={{
             fontFamily: "Rouge Script",
             textShadow: "-2px 4px 1px rgba(0,0,0,0.20)",
             color: "rgba(8, 1, 20, 1)",
           }}
-          className="text-7xl font-bold"
+          className="text-5xl md:text-7xl font-bold"
         >
           Kween Yasmin Font Maker!
         </h1>
@@ -77,14 +77,14 @@ export default function App() {
         <img
           src={SideEyeImage}
           alt="Kween Yasmin looking away"
-          className="w-35 self-start"
+          className="w-24 md:w-35 self-start"
         />
       </div>
 
-      {/* Bottom: 4/5 height */}
-      <div className="h-5/6 flex flex-row justify-evenly pb-8">
+      {/* bottom of page / main body */}
+      <div className="h-5/6 flex flex-col md:flex-row justify-evenly pb-8 gap-4">
 
-        <div className="px-4 py-2 text-base rounded-lg border border-gray-300
+        <div className="hidden md:block px-4 py-2 text-base rounded-lg border border-gray-300
               shadow-sm w-80 h-full resize-none">
           {/* TODO:
           <ul>
