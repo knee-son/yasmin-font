@@ -149,15 +149,17 @@ export default function App() {
                 const charCount = [...text].filter(c => c in letterMetrics).length;
 
                 const parentHeight = screenDimensions.height;
-                const height = Math.max(parentHeight * .1, parentHeight * (100 / charCount / 100));
+                const normal = Math.max(parentHeight * .1,parentHeight * (100 / charCount / 100));
+                const height = normal * letterMetrics[c]?.height | 5;
+                const distance = normal * letterMetrics[c]?.distance | 0;
 
                 return imageUrl ? (
                   <img
                     key={i}
                     src={imageUrl}
                     alt={c}
-                    style={{ height: `${height}px`, maxHeight: parentHeight * 0.3 + "px" }}
-                    className={`max-h-[${(parentHeight * .3)}px] inline-block my-2`}
+                    style={{ height: `${height}px`, translateY: `${distance}px`}}
+                    className={`inline-block my-2`}
                   />
                 ) : (
                   <div
