@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import DisclaimerModal from "./DisclaimerModal.jsx";
 import html2canvas from "html2canvas";
 
@@ -11,7 +11,11 @@ export default function App() {
   const [text, setText] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [autocaps, setAutocaps] = useState(true);
+
   const screenRef = useRef(null);
+  const [screenDimensions, setScreenDimensions] = useState(0);
+
+  const [screenAspect, setScreenAspect] = useState("4:3");
 
   const letterImages = import.meta.glob(
     "/src/assets/images/*.webp",
@@ -22,6 +26,26 @@ export default function App() {
 
   const handleClose = () => {
     setModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (!screenRef.current) return;
+    const el = screenRef.current;
+
+    const observer = new ResizeObserver(() => {
+      const factor = screenAspect == "4:3" ? 4/3 : 16/9;
+      const height = el.offsetHeight;
+      const width = height * factor;
+      setScreenDimensions({ width, height });
+    });
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [screenAspect]);
+
+  function toggleScreenAspect() {
+    setScreenAspect(screenAspect == "4:3" ? "16:9" : "4:3");
   };
 
   const downloadScreen = async () => {
@@ -101,9 +125,10 @@ export default function App() {
             border: "1px solid #d1d5db",
             borderRadius: ".75rem",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            width: screenDimensions.width,
           }}
           className="
-            h-full aspect-4/3 overflow-hidden
+            h-full overflow-hidden
             flex items-center justify-center
           "
         >
@@ -122,11 +147,9 @@ export default function App() {
 
                 const imageUrl = letterImages[key];
                 const charCount = [...text].filter(c => c in letterMetrics).length;
-                console.log([...text].map(c => c in letterMetrics), charCount);
-                const parentHeight = screenRef.current.clientHeight;
-                const height = Math.max(parentHeight * .1, parentHeight * (100 / charCount / 100));
 
-                console.log(height);
+                const parentHeight = screenDimensions.height;
+                const height = Math.max(parentHeight * .1, parentHeight * (100 / charCount / 100));
 
                 return imageUrl ? (
                   <img
@@ -195,14 +218,14 @@ export default function App() {
             </button>
 
             <button
-              onClick={() => { }}
+              onClick={toggleScreenAspect}
               className="
                 px-5 py-2 rounded-lg text-white bg-purple-950
                 hover:bg-purple-900 active:bg-purple-800
                 transition shadow-md
               "
             >
-              4:3
+              {screenAspect}
             </button>
           </div>
         </div>
