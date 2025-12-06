@@ -11,6 +11,7 @@ export default function App() {
   const [text, setText] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [autocaps, setAutocaps] = useState(true);
+  const [background, setBackground] = useState("bg-white");
 
   const screenRef = useRef(null);
   const [screenDimensions, setScreenDimensions] = useState(0);
@@ -22,9 +23,22 @@ export default function App() {
     { eager: true, import: "default" }
   );
 
-  const handleChange = (e) => setText(e.target.value);
+  const screenBackgrounds = [
+    "bg-white",
+    "bg-red-300",
+    "bg-blue-300",
+    "bg-green-300",
+    "bg-yellow-300",
+    "bg-slate-300",
+    "bg-purple-300",
+    "bg-pink-300",
+    "bg-orange-300",
+    "bg-teal-300",
+  ];
 
-  const handleClose = () => {
+  const handleTextInput = (e) => setText(e.target.value);
+
+  const handleModalClose = () => {
     setModalOpen(false);
   };
 
@@ -46,7 +60,6 @@ export default function App() {
       }
 
       setScreenDimensions({ width, height });
-      console.log(width, height);
     };
 
     handleResize(); // run once on mount
@@ -119,33 +132,65 @@ export default function App() {
       {/* bottom of page / main body */}
       <div className="h-5/6 flex flex-col md:flex-row justify-evenly pb-8 gap-4">
 
-        <div className="hidden md:block px-4 py-2 text-base rounded-lg border border-gray-300
-              shadow-sm w-80 h-full resize-none">
-          {/* TODO:
-          <ul>
-            <li>choose background</li>
-            <li>add aspect ratio</li>
-          </ul> */}
+        {/* background picker */}
+        <div className="hidden md:block text-base rounded-lg border border-gray-300
+          shadow-sm w-80 h-full resize-none">
+          {/* Title (fixed at top of this card) */}
+          <div className="p-3 border-b border-gray-100 bg-gray-200 shadow-inner">
+            <h3 className="text-base font-medium">Choose background</h3>
+            <p className="text-sm text-gray-500">Pick any of the free images below:</p>
+          </div>
+
+          <div className="px-4 py-2 overflow-y-auto overflow-x-hidden h-[calc(100%-64px)]">
+            <h3 className="text-base font-medium pb-2">Colors</h3>
+            <ul className="grid grid-cols-2 gap-2 pb-4">
+              {screenBackgrounds.map((bg, i) => (
+                <li
+                  key={i}
+                  onClick={() => setBackground(bg)}
+                  className={`
+                  aspect-4/3
+                  ${bg}
+                  rounded-xl
+                  shadow-inner
+                  cursor-pointer
+                  transition
+                  outline-1
+                  ${background === bg ? "outline-blue-400 outline-offset-2" : "outline-transparent outline-offset-0"}
+                `}
+                ></li>
+              ))}
+            </ul>
+          </div>
+
         </div>
 
         {/* main canvas */}
         <div
           ref={screenRef}
           style={{
-            backgroundColor: "#ffffff",
+            // backgroundColor: "#ffffff",
             border: "1px solid #d1d5db",
             borderRadius: ".75rem",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
             height: screenDimensions.height,
             width: screenDimensions.width,
           }}
-          className="
+          // className="
+          //   overflow-hidden
+          //   flex items-center justify-center
+          //   shrink-0
+          //   md:self-start
+          //   self-center
+          // "
+          className={`
+            ${background}
             overflow-hidden
             flex items-center justify-center
             shrink-0
             md:self-start
             self-center
-          "
+          `}
         >
           {/* glyphs */}
           <div className="
@@ -216,7 +261,7 @@ export default function App() {
           <div className="relative w-80">
             <textarea
               value={text}
-              onChange={handleChange}
+              onChange={handleTextInput}
               placeholder="Yasminify your text here! 🌸"
               className="
                 px-4 py-2 text-base rounded-lg border border-gray-300
@@ -283,7 +328,7 @@ export default function App() {
         what's this about?
       </div>
 
-      <DisclaimerModal isOpen={modalOpen} onClose={handleClose} />
+      <DisclaimerModal isOpen={modalOpen} onClose={handleModalClose} />
     </div>
   );
 }
