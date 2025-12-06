@@ -5,7 +5,7 @@ import html2canvas from "html2canvas";
 import StandImage from "./assets/images/stand.webp";
 import SideEyeImage from "./assets/images/side_eye.webp";
 
-import letterMetrics from "./assets/fonts/letterMetrics.json";
+import fontMap from "./assets/fonts/font-map.json";
 
 export default function App() {
   const [text, setText] = useState("");
@@ -29,19 +29,30 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!screenRef.current) return;
-    const el = screenRef.current;
+    const handleResize = () => {
+      const factor = 0.8;
+      const aspect = screenAspect === "4:3" ? 4 / 3 : 16 / 9;
 
-    const observer = new ResizeObserver(() => {
-      const factor = screenAspect == "4:3" ? 4/3 : 16/9;
-      const height = el.offsetHeight;
-      const width = height * factor;
+      let height = window.innerHeight * 0.8;
+      let width = height * aspect;
+
+      if (width > window.innerWidth * factor) {
+        if (window.innerWidth < 768) {
+          width = window.innerWidth * 0.7;
+        } else {
+          width = window.innerWidth * 0.5;
+        }
+        height = width / aspect;
+      }
+
       setScreenDimensions({ width, height });
-    });
+      console.log(width, height);
+    };
 
-    observer.observe(el);
+    handleResize(); // run once on mount
 
-    return () => observer.disconnect();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [screenAspect]);
 
   function toggleScreenAspect() {
@@ -125,11 +136,15 @@ export default function App() {
             border: "1px solid #d1d5db",
             borderRadius: ".75rem",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            height: screenDimensions.height,
             width: screenDimensions.width,
           }}
           className="
-            h-full overflow-hidden
+            overflow-hidden
             flex items-center justify-center
+            shrink-0
+            md:self-start
+            self-center
           "
         >
           <div className="
@@ -139,27 +154,32 @@ export default function App() {
               <p className="text-gray-400 text-lg">Your stylized text will show here...</p>
             ) : (
               [...(autocaps ? text.toUpperCase() : text)].map((c, i) => {
-                const key = letterMetrics[c]?.filename;
+                const key = fontMap[c]?.filename;
 
                 if (c === '\n') {
                   return <br key={i} />;
                 }
 
                 const imageUrl = letterImages[key];
-                const charCount = [...text].filter(c => c in letterMetrics).length;
+                const charCount = [...text].filter(c => c in fontMap).length;
 
                 const parentHeight = screenDimensions.height;
-                const normal = Math.max(parentHeight * .1,parentHeight * (100 / charCount / 100));
-                const height = normal * letterMetrics[c]?.height | 5;
-                const distance = normal * letterMetrics[c]?.distance | 0;
+
+                let unitHeight;
+                unitHeight = parentHeight * (100 / charCount / 100);
+                unitHeight = Math.max(parentHeight * .1, unitHeight);
+                unitHeight = Math.min(parentHeight * .3, unitHeight);
+
+                const height = unitHeight * fontMap[c]?.height | 5;
+                const distance = unitHeight * fontMap[c]?.distance | 0;
 
                 return imageUrl ? (
                   <img
                     key={i}
                     src={imageUrl}
                     alt={c}
-                    style={{ height: `${height}px`, translateY: `${distance}px`}}
-                    className={`inline-block my-2`}
+                    style={{ height: `${height}px`, translate: `0px ${distance}px` }}
+                    className={`inline-block my-2 align-bottom`}
                   />
                 ) : (
                   <div
@@ -207,7 +227,7 @@ export default function App() {
           </div>
 
 
-          <div className="flex gap-2 self-start">
+          <div className="flex gap-2 self-center md:self-start">
             <button
               onClick={downloadScreen}
               className="
