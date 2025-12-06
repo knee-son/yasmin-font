@@ -147,6 +147,7 @@ export default function App() {
             self-center
           "
         >
+          {/* glyphs */}
           <div className="
             whitespace-pre-wrap text-center
           ">
@@ -165,11 +166,28 @@ export default function App() {
 
                 const parentHeight = screenDimensions.height;
 
-                let unitHeight;
-                unitHeight = parentHeight * (100 / charCount / 100);
-                unitHeight = Math.max(parentHeight * .1, unitHeight);
-                unitHeight = Math.min(parentHeight * .3, unitHeight);
+                function cubicBezier(p0, p1, p2, p3, t) {
+                  const cX = 3 * p0;
+                  const bX = 3 * (p2 - p1) - cX;
+                  const aX = 1 - cX - bX;
+                  return aX * t ** 3 + bX * t ** 2 + cX * t;
+                }
 
+                function easeOut(t) {
+                  return cubicBezier(0.33, 1, 0.68, 1, t);
+                }
+
+                function computeUnitHeight(parentHeight, charCount) {
+                  const min = parentHeight * 0.1;
+                  const max = parentHeight * 0.3;
+
+                  const t = Math.max(0, Math.min(1, -charCount / 10 + 1)); // normalized input
+                  const eased = easeOut(t);
+
+                  return min + (max - min) * eased;
+                }
+
+                const unitHeight = computeUnitHeight(parentHeight, charCount);
                 const height = unitHeight * fontMap[c]?.height | 5;
                 const distance = unitHeight * fontMap[c]?.distance | 0;
 
@@ -184,7 +202,8 @@ export default function App() {
                 ) : (
                   <div
                     key={i}
-                    className="w-8 max-h-[30%] aspect-1/3 inline-block"
+                    style={{ width: `${unitHeight * .5}px` }}
+                    className="w-8 inline-block"
                   />
                 );
               })
