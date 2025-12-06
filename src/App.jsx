@@ -25,15 +25,15 @@ export default function App() {
 
   const screenBackgrounds = [
     "bg-white",
-    "bg-red-300",
-    "bg-blue-300",
-    "bg-green-300",
-    "bg-yellow-300",
-    "bg-slate-300",
-    "bg-purple-300",
-    "bg-pink-300",
-    "bg-orange-300",
-    "bg-teal-300",
+    "bg-red-200",
+    "bg-blue-200",
+    "bg-green-200",
+    "bg-yellow-200",
+    "bg-slate-200",
+    "bg-purple-200",
+    "bg-pink-200",
+    "bg-orange-200",
+    "bg-teal-200",
   ];
 
   const handleTextInput = (e) => setText(e.target.value);
