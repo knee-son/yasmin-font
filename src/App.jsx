@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import DisclaimerModal from "./DisclaimerModal.jsx";
 import html2canvas from "html2canvas";
 
@@ -6,6 +6,7 @@ import StandImage from "./assets/images/stand.webp";
 import SideEyeImage from "./assets/images/side_eye.webp";
 
 import fontMap from "./assets/fonts/font-map.json";
+import kerning from "./assets/fonts/kerning.json";
 
 export default function App() {
   const [text, setText] = useState("");
@@ -17,6 +18,15 @@ export default function App() {
   const [screenDimensions, setScreenDimensions] = useState(0);
 
   const [screenAspect, setScreenAspect] = useState("4:3");
+
+  const casedText = useMemo(() => {
+    return autocaps ? [...text.toUpperCase()] : [...text];
+  }, [text, autocaps]);
+
+  const charCount = useMemo(
+    () => casedText.filter((ch) => !!fontMap[ch]).length,
+    [casedText, fontMap]
+  );
 
   const letterImages = import.meta.glob(
     "/src/assets/images/*.webp",
@@ -71,6 +81,27 @@ export default function App() {
   function toggleScreenAspect() {
     setScreenAspect(screenAspect == "4:3" ? "16:9" : "4:3");
   };
+
+  function cubicBezier(p0, p1, p2, p3, t) {
+    const cX = 3 * p0;
+    const bX = 3 * (p2 - p1) - cX;
+    const aX = 1 - cX - bX;
+    return aX * t ** 3 + bX * t ** 2 + cX * t;
+  }
+
+  function easeOut(t) {
+    return cubicBezier(0.33, 1, 0.68, 1, t);
+  }
+
+  function computeUnitHeight(parentHeight, charCount) {
+    const min = parentHeight * 0.1;
+    const max = parentHeight * 0.3;
+
+    const t = Math.max(0, Math.min(1, -charCount / 10 + 1)); // normalized input
+    const eased = easeOut(t);
+
+    return min + (max - min) * eased;
+  }
 
   const downloadScreen = async () => {
     if (!screenRef.current) return;
@@ -169,20 +200,12 @@ export default function App() {
         <div
           ref={screenRef}
           style={{
-            // backgroundColor: "#ffffff",
             border: "1px solid #d1d5db",
             borderRadius: ".75rem",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
             height: screenDimensions.height,
             width: screenDimensions.width,
           }}
-          // className="
-          //   overflow-hidden
-          //   flex items-center justify-center
-          //   shrink-0
-          //   md:self-start
-          //   self-center
-          // "
           className={`
             ${background}
             overflow-hidden
@@ -196,59 +219,51 @@ export default function App() {
           <div className="
             whitespace-pre-wrap text-center
           ">
-            {text.length === 0 ? (
+            {casedText.length === 0 ? (
               <p className="text-gray-400 text-lg">Your stylized text will show here...</p>
             ) : (
-              [...(autocaps ? text.toUpperCase() : text)].map((c, i) => {
+              casedText.map((c, i) => {
                 const key = fontMap[c]?.filename;
 
                 if (c === '\n') {
                   return <br key={i} />;
                 }
-
                 const imageUrl = letterImages[key];
-                const charCount = [...text].filter(c => c in fontMap).length;
 
                 const parentHeight = screenDimensions.height;
-
-                function cubicBezier(p0, p1, p2, p3, t) {
-                  const cX = 3 * p0;
-                  const bX = 3 * (p2 - p1) - cX;
-                  const aX = 1 - cX - bX;
-                  return aX * t ** 3 + bX * t ** 2 + cX * t;
-                }
-
-                function easeOut(t) {
-                  return cubicBezier(0.33, 1, 0.68, 1, t);
-                }
-
-                function computeUnitHeight(parentHeight, charCount) {
-                  const min = parentHeight * 0.1;
-                  const max = parentHeight * 0.3;
-
-                  const t = Math.max(0, Math.min(1, -charCount / 10 + 1)); // normalized input
-                  const eased = easeOut(t);
-
-                  return min + (max - min) * eased;
-                }
-
                 const unitHeight = computeUnitHeight(parentHeight, charCount);
-                const height = unitHeight * fontMap[c]?.height | 5;
-                const distance = unitHeight * fontMap[c]?.distance | 0;
 
-                return imageUrl ? (
+                if (!imageUrl) {
+                  return (
+                    <div
+                      key={i}
+                      style={{ width: `${unitHeight * .5}px` }}
+                      className="inline-block"
+                    />
+                  );
+                }
+
+                const height = unitHeight * fontMap[c]?.height || 5;
+                const dy = unitHeight * fontMap[c]?.distance || 0;
+
+                const b = casedText[i - 1];
+                let dx = 0;
+                if (i != 0 && kerning[b] && kerning[b][c]) {
+                  dx = -kerning[b][c] * unitHeight * 0.9;
+                  console.log(dx);
+                }
+
+                return (
                   <img
                     key={i}
                     src={imageUrl}
                     alt={c}
-                    style={{ height: `${height}px`, translate: `0px ${distance}px` }}
+                    style={{
+                      height: `${height}px`,
+                      translate: `0px ${dy}px`,
+                      marginLeft: `${dx}px`,
+                    }}
                     className={`inline-block my-2 align-bottom`}
-                  />
-                ) : (
-                  <div
-                    key={i}
-                    style={{ width: `${unitHeight * .5}px` }}
-                    className="w-8 inline-block"
                   />
                 );
               })
