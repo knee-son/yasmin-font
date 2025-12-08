@@ -1,4 +1,3 @@
-- Z sa capitals kay para lower z
-- scrape canva website
-- add credits to canva asap
-- R kay wala sa baseline, like off iya baseline or smth
+### TODO
+- set color of shirt not just as blue
+- power this with ai. make user select image then change typeface with their image
