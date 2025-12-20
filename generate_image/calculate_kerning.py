@@ -60,17 +60,16 @@ def calculate_kerning(left, right):
 
     y_alignment = a_distance - b_distance
     if y_alignment < 0:
-        bbox = list(a_image.getbbox())
-        bbox[1] += y_alignment
-        a_image = a_image.crop(bbox)
-        a_image = a_image.transform(
-            a_image.size, Image.AFFINE, (1, 0, 0, 0, 1, -y_alignment))
-    elif y_alignment > 0:
         bbox = list(b_image.getbbox())
-        bbox[1] -= y_alignment
+        bbox[1] = min(abs(y_alignment), bbox[3])
         b_image = b_image.crop(bbox)
-        b_image = b_image.transform(
-            b_image.size, Image.AFFINE, (1, 0, 0, 0, 1, y_alignment))
+    elif y_alignment > 0:
+        bbox = list(a_image.getbbox())
+        bbox[1] = min(abs(y_alignment), bbox[3])
+        a_image = a_image.crop(bbox)
+
+    if not (a_image.getbbox() and b_image.getbbox()):
+        return 1
 
     # minimum height to check
     cap = min(a_image.getbbox()[3], b_image.getbbox()[3])
